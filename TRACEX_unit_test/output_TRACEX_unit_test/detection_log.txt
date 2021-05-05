@@ -1,0 +1,7 @@
+Processing file /Users/floradesmet/Documents/ETHz_flora/TRACEX/TRACEX_unit_test/boolean_array_for_TRACEX_unit_test.nc 
+Processing m = 1There are 10 events in chunk 1 
+Processing m = 2There are 10 events in chunk 2 
+m global 11 
+M global 20 
+m local 11 
+M local 20 
