@@ -8,7 +8,7 @@ This package contains:
 1. A namelist python file (define_TRACEX_variables.py) setting ALL necessary parameters and path-names
 2. A module containing all necessary functions (TRACEX_functions.py)
 3. The main routine to detect the extremes (launch_TRACEX.py) calling both module and namelist 
-4. A simple example on a 2D array with a step-by-step description of the algorthm (TRACEX_unit_test folder)
+4. A simple example on a 2D array with a step-by-step description of the algorithm (TRACEX_unit_test folder)
 
 ## Goal of the package
 The package aims at tracking in time spatially coherent structures of grid cells fulfilling a given criterion in large datasets, such as earth system model output, that cannot be treated as one block due to memory exceedance and thus need to be chunked. <br>
@@ -25,10 +25,10 @@ At the core of the package is the ndimage.label() function, which is used to det
 As model output (ROMS in this case) can be memory heavy, this package allows to chunk the data in time, i.e. calculate the patches over a limited number of output time steps. When transitioning from one chunk to the next chunk, the package ensures, that extremes that were separated by chunking the data, are rejoined. <br>
 
 <p align="center">
-  <img width="400" height="100" src="/TRACEX_unit_test/boolean_array_TRACEX_unit_test.png" alt="Boolean array 2D example"/>
+  <img width="100%" src="/TRACEX_unit_test/boolean_array_TRACEX_unit_test.png" alt="Boolean array 2D example"/>
 </p>
 <p align="center">
-  <img width="400" height="100" src="/TRACEX_unit_test/identified_extremes_TRACEX_unit_test.png" alt="Extremes 2D example"/>
+  <img width="100%" src="/TRACEX_unit_test/identified_extremes_TRACEX_unit_test.png" alt="Extremes 2D example"/>
 </p>
 
 The package:
@@ -46,6 +46,7 @@ A comprehensive list of input needed to run the package can be found here:
 3. Model outputs:
     - the time period: years vector and associated daily (or other frequency depending on the model output frequency) vector  
     - the path to the daily model outputs (one file per year)
+    - the setup used in the filenames of model output (format "setup_year_avg.nc")
 4. Output: name of output folder 
 5. Grid data:
     - number of z levels 

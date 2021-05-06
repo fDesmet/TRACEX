@@ -44,6 +44,7 @@ def init_property_extreme_dict(additional_diags):
 
     ## Loaction properties
     z_max               [m] shallowest depth reached by the event 
+    z_min               [m] deepest depth reached by the event 
     z_min_at_z_max      [m] deepest depth where the event reached the shallowest level
     loc_z_max_eta       ETA index (on reduced grid) of the shallowest point
     loc_z_max_xi        XI index (on reduced grid) of the shallowest point
@@ -97,6 +98,7 @@ def init_property_extreme_dict(additional_diags):
 
     # Loaction properties:
     mhw['z_max'] = []           # [m] shallowest depth reached by the event 
+    mhw['z_min'] = []           # [m] deepest depth reached by the event
     mhw['z_min_at_z_max'] = []  # [m] deepest depth where the event reached the shallowest level
     mhw['loc_z_max_eta'] = []   # ETA index (on reduced grid) of the shallowest point
     mhw['loc_z_max_xi'] = []    # XI index (on reduced grid) of the shallowest point

@@ -17,6 +17,7 @@ This includes:
 3) Model outputs 
 - the time period: years vector 'years' and associated daily vector 't' 
 - the path to the daily model outputs (one file per year): 'dir_in' 
+- the setup used in the filenames of model output (format "setup_year_avg.nc")
 
 4) Output folder 
 - name of output folder: 'outpath'
@@ -107,6 +108,9 @@ dir_in = '/net/kryo/work/fdesmet/roms/output/pactcs30/hc003_daily_pactcs30/avg'
 if use_extended_hindcast:
     dir_in2 = '/net/kryo/work/fdesmet/roms/output/pactcs30/hc003_daily_pactcs30_extended_2013_2019/avg'
 
+# setup for filenames of model output (format "setup_year_avg.nc")
+setup = 'pactcs30'
+
 ###################################################################################################
 #############################  4) Choose your output folder   #####################################
 ###################################################################################################
@@ -125,7 +129,7 @@ except FileExistsError:
 # Your model grid file
 grdfile = '/net/kryo/work/martinfr/Roms/Inputs/pactcs30/pactcs30_grd.nc'
 # Your file where grid informations are stored such as size of grid cells
-clmfile = '/net/{}/work/martinfr/Roms/Inputs/{}/N64ts10tb4hc250_grd_merged_SiO3_PO4_fix/{}_clm.nc'.format(host,setup,setup)
+clmfile = '/net/kryo/work/martinfr/Roms/Inputs/pactcs30/N64ts10tb4hc250_grd_merged_SiO3_PO4_fix/pactcs30_clm.nc'
 # Using the getGrid function to get Lat/lon of the grid and area
 romsGrd = getGrid(grdfile)
 romsGrd.getAttrs(clmfile)
@@ -133,7 +137,7 @@ romsGrd.getLatLon()
 romsGrd.getArea()
 
 # Which domain do you want to run the detection on?
-fmask = '/net/{}/work/fdesmet/Data/Masks/north_pacific_CCS_option1.nc'.format(host)
+fmask = '/net/kryo/work/fdesmet/Data/Masks/north_pacific_CCS_option1.nc'
 ncfmasks = netCDF4.Dataset(fmask, 'r')
 areamask = ncfmasks.variables['mask'][:]
 #reduce domain size: from the mask, reduce the domain of the detection 
