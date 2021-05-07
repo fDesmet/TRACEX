@@ -40,7 +40,7 @@ def init_property_extreme_dict(additional_diags):
     ## Size properties
     volume_tot          [km3.d] cumulative volume over time
     volume_mean         [km3] daily volume: cumulative volume / duration 
-    vertical_extent     [m] difference between shallowest and deepest point
+    vertical_extent     [m] difference between shallowest and deepest point over the whole lifetime
 
     ## Loaction properties
     z_max               [m] shallowest depth reached by the event 
@@ -92,7 +92,7 @@ def init_property_extreme_dict(additional_diags):
     ## Size properties:
     mhw['volume_tot'] = []      # [km3.d] cumulative volume over time
     mhw['volume_mean'] = []     # [km3] daily volume: cumulative volume / duration 
-    mhw['vertical_extent'] =[]  # [m] difference between shallowest and deepest point 
+    mhw['vertical_extent'] =[]  # [m] difference between shallowest and deepest point over the whole lifetime
 
     #  !!!! Note that for all depth-related properties computation, the ROMS grid has the shallowest depth associated to the highest s-level and the deepest depth to the 0 s-level !!!!! #
 
@@ -700,3 +700,204 @@ def load_threshold_linear_trend_removed(thresh_residuals,slope,tdata):
     del tdata_4D
 
     return thresh_4D
+
+
+### To compute additional properties
+import math
+
+def compute_distance_earth(lat1,lon1,lat2,lon2):
+    '''
+    Compute the distance in kilometers on the Earth based on two lat/lon coordinates point.
+    Uses the Haversine formula considering the Earth as a sphere of R=6371km.
+    This formula is valid for latitudes close to 40°N or S and gets biased otherwise due to the ellipsoidal shape of the Earth.
+    '''
+    # change 0-360 °E lon to -180:180 with negative for °W
+    lon1 -= 180
+    lon2 -= 180
+    dlat = (lat2 - lat1)*np.pi/180
+    dlon = (lon2 - lon1)*np.pi/180
+    phy1 = lat1 *np.pi/180
+    phy2 = lat2 *np.pi/180
+    R = 6371 # km
+    
+    # Haversine formula
+    a = math.sin(dlat/2)*math.sin(dlat/2) + math.cos(phy1)*math.cos(phy2)*math.sin(dlon/2)*math.sin(dlon/2)
+    c = 2*math.atan2(np.sqrt(a),np.sqrt(1-a))
+    d = R*c
+    return d
+
+def implement_additonal_characteristics(mhw,fdcoast,dcoast_varname,flonlat,lon_varname,lat_varname,zlevs_rho,area,dz,extremes,indices):
+    '''
+    Implement addtional characteristics to the dictionnary for each event:
+
+    - depth                     [m] time average of volume weighted depth
+    - vertOcc                   [m] time average of area weighted vertical occupation of an event
+    - dcoast                    [km] time average of volume weighted distance to the coast
+    - lat                       [degN] time average of volume weighted latitude
+    - lon                       [degE] time average of volume weighted longitute
+    - horProp                   [km] distance between the center of gravity of an extreme at iniation and at ending
+    - vertProp                  [m] height difference between the center of gravity of an extreme at iniation and at ending: positive value means a deepening; negative value means a shoaling of the events over its lifetime
+    - propVel                   [km/d] horizontal propagation divided by duration of an event
+    - area_mean                 [km2] area average in time and depth
+    - duration_at_cell_mean     [days] average duration at each grid cell involved in the extreme
+    - duration_at_cell_max      [days] maximum duration at one grid cell
+    - severity_omega_D_I        [days. omega unit] duration times mean intensity with regard to aragonite saturation state
+    - severity_pH_D_I           [days. pH unit] duration times mean intensity with regard to pH
+    
+    '''
+
+    # import sparse matrix module
+    import sparse as spa 
+
+    add_car = ['depth','vertOcc','dcoast','lat','lon','horProp','vertProp','propVel','area_mean',
+    'duration_at_cell_mean','duration_at_cell_max','severity_omega_D_I','severity_pH_D_I']
+
+    print('Implementing addtional characteristics to the dictionnary: {}'.format(add_car))
+
+    ev_nu = np.asarray(mhw['ev_number'][:])
+    # Get number of s-levels
+    NZ = dz.shape[0]
+
+    # initialize
+    for var in add_car:
+        mhw[var] = []
+ 
+    # expand to 3D fields
+    lat = netCDF4.Dataset(flonlat, 'r').variables[lat_varname][indices[0]:indices[1],indices[2]:indices[3]]   
+    lat3D = np.expand_dims(lat, axis=0)
+    lat3D = np.repeat(lat3D,NZ, axis=0)
+    del lat
+    lon = netCDF4.Dataset(flonlat, 'r').variables[lon_varname][indices[0]:indices[1],indices[2]:indices[3]]   
+    lon3D = np.expand_dims(lon, axis=0)
+    lon3D = np.repeat(lon3D,NZ, axis=0)
+    del lon
+    dcoast = netCDF4.Dataset(fdcoast, 'r').variables[dcoast_varname][indices[0]:indices[1],indices[2]:indices[3]]   
+    dcoast3D = np.expand_dims(dcoast, axis=0)
+    dcoast3D = np.repeat(dcoast3D,NZ, axis=0)
+    del dcoast
+
+    # Fill the new characteristics
+    for ev,i in zip(ev_nu,range(len(ev_nu))):
+        key = str(ev)
+        print('Event {}'.format(key))
+
+        # Get first and last time of occurrence
+        t_min = np.nanmin(extremes[key]['time'])
+        t_max = np.nanmax(extremes[key]['time'])
+
+        # Initialize 
+        v_tot = 0
+        depth_w = 0
+        dcoast_w = 0
+        lat_w = 0
+        lon_w = 0 
+        a_tot_vo = 0
+        vo_w = 0
+        area_ev_per_time = []
+
+        # severities
+        mhw['severity_omega_D_I'].append(np.multiply(mhw['duration'][i],mhw['omega_I_mean'][i]))
+        mhw['severity_pH_D_I'].append(np.multiply(mhw['duration'][i],mhw['pH_I_mean'][i]))
+
+        # Loop over lifetime of the event
+        for ti in range(t_min,t_max+1):
+            # select grid cells hit by the event at that time
+            ss = np.asarray(extremes[key]['s_rho'])[np.asarray(extremes[key]['time'])==ti]
+            etas = np.asarray(extremes[key]['eta_rho'])[np.asarray(extremes[key]['time'])==ti]
+            xis = np.asarray(extremes[key]['xi_rho'])[np.asarray(extremes[key]['time'])==ti]
+
+            
+            v_gridded = np.multiply(area[etas,xis],dz[ss,etas,xis])*10**-9  # volume at t=ti [km3] 
+            v_tot += np.sum(v_gridded) # add to cumulative volume over lifetime
+
+            # Add the volume-integrated values for depth, dcoast, latitude and longitude for that timestep
+            tmp = zlevs_rho[ss,etas,xis]
+            depth_w += np.sum(np.multiply(tmp,v_gridded))
+            tmp = dcoast3D[ss,etas,xis]
+            dcoast_w += np.sum(np.multiply(tmp,v_gridded))
+            tmp = lat3D[ss,etas,xis]
+            lat_w += np.sum(np.multiply(tmp,v_gridded))
+            tmp = lon3D[ss,etas,xis]
+            lon_w += np.sum(np.multiply(tmp,v_gridded))
+            del tmp
+
+            # Compute area-integrated vertical occupation for that timestep
+            data = np.ones(len(ss))
+            coords = np.asarray([ss,etas,xis]).astype('int64') 
+            # use sparse matrix
+            sparse_arr = spa.COO(coords, data,has_duplicates=False)
+            #print(sparse_arr.shape)
+            # multiply sparse array with dz values
+            array_tmp = sparse_arr*dz[:sparse_arr.shape[0],:sparse_arr.shape[1],:sparse_arr.shape[2]]
+            vo_t_tmp = array_tmp.sum(axis=0) # do the sum of the extreme cells in depth --> return a 2D spatial array of vertical occupation
+            # multiply this vertical occupation by area
+            vo_t_a_w = np.multiply(vo_t_tmp,area[:sparse_arr.shape[1],:sparse_arr.shape[2]])
+            # Add to area-integrated vertical occupation
+            vo_w += np.sum(vo_t_a_w)
+            # Compute area involved 
+            area_tmp = np.where(vo_t_tmp!=0,area[:sparse_arr.shape[1],:sparse_arr.shape[2]],0) # Count the area only where the vertical occupation is not zero
+            a_tot_vo += np.sum(area_tmp) # [m2]
+
+            # Append area hit by event at each s-level       
+            ss_min = np.nanmin(ss)
+            ss_max = np.nanmax(ss)
+            # Loop over depths
+            for s in range(ss_min,ss_max+1):
+                etas_ss = etas[ss==s]
+                xis_ss = xis[ss==s]
+                area_ev_per_time.append(np.nansum(area[etas_ss,xis_ss])*10**-6) # [km2]
+
+            if ti ==t_min:
+                # If ti is the first timestep, compute center of gravity of the event for propagation
+                tmp = lat3D[ss,etas,xis]
+                lat_cdg_ini = np.sum(np.multiply(tmp,v_gridded))/np.sum(v_gridded) 
+                tmp = lon3D[ss,etas,xis]
+                lon_cdg_ini = np.sum(np.multiply(tmp,v_gridded))/np.sum(v_gridded) 
+                tmp = zlevs_rho[ss,etas,xis]
+                depth_cdg_ini = np.sum(np.multiply(tmp,v_gridded))/np.sum(v_gridded) 
+                del tmp
+            if ti==t_max:
+                # If ti is the last timestep, compute center of gravity of the event for propagation
+                tmp = lat3D[ss,etas,xis]
+                lat_cdg_fin = np.sum(np.multiply(tmp,v_gridded))/np.sum(v_gridded) 
+                tmp = lon3D[ss,etas,xis]
+                lon_cdg_fin = np.sum(np.multiply(tmp,v_gridded))/np.sum(v_gridded)                
+                tmp = zlevs_rho[ss,etas,xis]
+                depth_cdg_fin = np.sum(np.multiply(tmp,v_gridded))/np.sum(v_gridded) 
+                del tmp
+
+        # Fill in dictionnary for that event
+        mhw['depth'].append(depth_w/v_tot)
+        mhw['dcoast'].append(dcoast_w/v_tot)
+        mhw['lat'].append(lat_w/v_tot)
+        mhw['lon'].append(lon_w/v_tot)
+
+        mhw['vertProp'].append(depth_cdg_fin-depth_cdg_ini) # [m] positive means a deepening; negative means a shoaling of the events over its lifetime
+        HP = compute_distance_earth(lat_cdg_ini,lon_cdg_ini,lat_cdg_fin,lon_cdg_fin)
+        mhw['horProp'].append(HP)
+
+        mhw['propVel'].append(HP/mhw['duration'][i]) # [km/day]
+
+        mhw['area_mean'].append(np.nanmean(area_ev_per_time)) 
+        
+        mhw['vertOcc'].append(vo_w/a_tot_vo) # [m]
+        del data,coords,sparse_arr,array_tmp,vo_t_tmp,vo_t_a_w,vo_w,a_tot_vo
+        del ss,etas,xis,t_min,t_max,v_tot,depth_w,dcoast_w,lat_w,lon_w,v_gridded,HP,lat_cdg_ini,lon_cdg_ini,lon_cdg_fin,lat_cdg_fin,area_ev_per_time,ss_min,ss_max,etas_ss,xis_ss
+
+        # local duration per grid cell 
+        times = extremes[key]['time']
+        ss = extremes[key]['s_rho']
+        etas= extremes[key]['eta_rho']
+        xis = extremes[key]['xi_rho'] 
+        coords = np.asarray([times,ss,etas,xis]).astype('int64') 
+        del ss,times,etas,xis
+        # create an 2D array from Z,Y,X coordinates only
+        array_2D_3coords = np.vstack((coords[1,:],coords[2,:],coords[3,:]))
+        coord_unique,duration_cell = np.unique(array_2D_3coords,axis=1,return_counts=True) # return the cell coordinates and the number of days this cell was extreme  
+        mhw['duration_at_cell_mean'].append(np.nanmean(duration_cell))
+        mhw['duration_at_cell_max'].append(np.nanmax(duration_cell))
+        del duration_cell,coord_unique,array_2D_3coords
+
+    return mhw
+
+        

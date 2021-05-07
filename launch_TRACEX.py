@@ -577,6 +577,16 @@ def tracex():
     pickle.dump(extreme_detected_loc,open(fname,'wb'),protocol=pickle.HIGHEST_PROTOCOL)   
 
     print('Detection done')
+
+    if additional_properties:
+        mhw = implement_additonal_characteristics(mhw,fdcoast,dcoast_varname,flonlat,lon_varname,lat_varname,zlevs_rho,area,dz,extremes,indices)
+        # save new dictionnary filled with additional properties
+        fname = outpath + 'extreme_detection_{}m_{}_{}_minD_{}_3.pck'.format(depth,years[0],years[-1],minDuration)
+        pickle.dump(mhw,open(fname,'wb'))
+        # convert the dictionary into a DataFrame
+        data = pd.DataFrame.from_dict(mhw)
+        # write the dataFrame into csv file
+        data.to_csv(outpath + 'extreme_detection_{}m_{}_{}_minD_{}_3.csv'.format(depth,years[0],years[-1],minDuration))
                                       
 
 ###################

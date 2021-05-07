@@ -3,6 +3,8 @@
 Detecting marine extremes in space (3D) and time.<br>
 Extremes with regards to pH, aragonite saturation state, oxygen, temperature or any other variable are detected in space (3D) and time from large model output. <br>
 
+![](images/TRACEX_gif.gif)
+
 ## Content of the package
 This package contains:
 1. A namelist python file (define_TRACEX_variables.py) setting ALL necessary parameters and path-names

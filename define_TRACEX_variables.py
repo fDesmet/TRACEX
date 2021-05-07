@@ -37,6 +37,11 @@ This includes:
 - 'path_in' (path where the Temp_climatologies are located)
 - 'filename_clm_366j' (name of a .npy file)
 
+8) If needs additional properties for events such as propagation distance,  mean vertical occupation... This will run only after the detection has completed
+- longitude 2D field
+- latitude 2D field
+- distance the coast 2D field
+
 """
 
 # Load classic python modules
@@ -77,8 +82,6 @@ thresh_T = 0
 edges_or_corners = 1 
 edges_only = np.abs(1-edges_or_corners)
 
-# do you want additional diagnostics to be output? Set to True.
-additional_diags = True
 # do you want two variables to be extreme simultaneously (compound extremes)? Set to True.
 two_threshs = True
 # do you want the threshold to be based on a moving baseline? Set to True.
@@ -91,7 +94,10 @@ depth = 150       # in meters
 minDuration = 5   # in days
 # are you restarting the detection from a year in the middle of your period? Set to 1. 
 restart = 0
-
+# do you want additional diagnostics to be output such as oxgen and temperature informations? Set to True.
+additional_diags = True
+# do you want to add additional properties such as propagation distance, mean vertical occupation...? Set to True. This will run only after the detection has completed
+additional_properties = True
 
 ###################################################################################################
 #############################  3)  Choose model outputs      ######################################
@@ -256,3 +262,18 @@ else:
 ###################################################################################################        
 clm_file_output = '/net/kryo/work/fdesmet/roms/output/pactcs30/hc003_daily_pactcs30_extended_2013_2019/clim/daily_clim_1984_2019_temp_smooth.nc'
 filename_clm_366j = 'Temp_climatologies/daily_clim_1984_2019_temp_smooth_366j.npy'
+
+
+###################################################################################################
+#### 8) Load the latitude, longitude and distance to the coast arrays to compute ##################
+####    additional properties of the extremes such as propagation distance...    ##################
+################################################################################################### 
+# This will run only after the detection has completed
+if additional_properties:
+    flonlat = '/net/kryo/work/martinfr/Roms/Inputs/pactcs30/pactcs30_grd.nc'
+    lon_varname = 'lon_rho'
+    lat_varname = 'lat_rho'
+    fdcoast = '/net/kryo/work/fdesmet/Data/pactcs30/pactcs30_dist2coast.nc'
+    dcoast_varname = 'dcoast'
+
+   
