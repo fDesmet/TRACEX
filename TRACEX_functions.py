@@ -900,4 +900,42 @@ def implement_additonal_characteristics(mhw,fdcoast,dcoast_varname,flonlat,lon_v
 
     return mhw
 
-        
+def select_events_reaching_top_depth_limit(mhw,zlevs_rho,extremes,depth_lim=100):
+    '''
+    Remove all events that did not reach a certain depth. 
+    '''
+    
+    print('Removing all extremes that do not reach the top {} m...'.format(depth_lim))
+
+    ev_to_remove = []
+    idx_to_remove = []
+    for ev,idx in zip(mhw['ev_number'],range(mhw['n_events'])):
+        key = str(ev)
+        # see if there is a zlevs shallower than depth_limit for this extreme 
+        ss = np.asarray(extremes[key]['s_rho'])
+        etas = np.asarray(extremes[key]['eta_rho'])
+        xis = np.asarray(extremes[key]['xi_rho'])
+
+        shallowest_depth_hit = np.nanmin(zlevs_rho[ss,etas,xis])
+        if shallowest_depth_hit > depth_lim:
+            # if the shallowest depth hit by this extreme is larger than (thus below) the depth limit of detection 
+            ev_to_remove.append(ev)
+            idx_to_remove.append(idx)     
+
+    print('{} events did not reach the {} m depth'.format(len(ev_to_remove),depth_lim))
+    # Remove all extremes not reaching the depth limit from coordinates dictionnay 
+    for k in ev_to_remove:
+        del extremes[str(k)]
+    
+    # Remove all extremes not reaching the depth limit from characteristics dictionnay   
+    # convert the array into list 
+    mhw['duration'] = mhw['duration'].tolist()               
+    for k in mhw.keys():
+        if k == 'n_events':
+            continue
+        for track,n in zip(idx_to_remove,range(len(idx_to_remove))):
+            mhw[k].pop(int(track-n))          
+    # Replace the number of events by the length of the dictionnary to have the number of events fulfilling conditions
+    mhw['n_events'] = len(mhw['ev_number'])  
+
+    return mhw,extremes

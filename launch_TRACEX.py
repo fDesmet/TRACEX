@@ -556,6 +556,9 @@ def tracex():
                 
     # Replace the number of events by the length of the dictionnary to have the number of events fulfilling conditions
     mhw['n_events'] = len(mhw['ev_number'])  
+
+    # remove all events that do not reach the depth_lim_output
+    mhw, extremes = select_events_reaching_top_depth_limit(mhw,zlevs_rho,extremes,depth_lim=depth_lim_output)
         
     ###########################################################################
     ####################         Saving output       ##########################

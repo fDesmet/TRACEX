@@ -89,11 +89,12 @@ moving_baseline = False
 # is your model outputs split into two time periods kept in different folders? Set to True.
 use_extended_hindcast = True
 # what is your lower depth limit? Detection is from surface to "depth"
-depth = 150       # in meters
+depth = 150             # in meters for the detection part
+depth_lim_output = 100  # in meters for the final outputs
 # what is your lower duration limit? Duration>= minDuration
 minDuration = 5   # in days
-# are you restarting the detection from a year in the middle of your period? Set to 1. 
-restart = 0
+# are you restarting the detection from a year in the middle of your period? Set to True. 
+restart = False
 # do you want additional diagnostics to be output such as oxgen and temperature informations? Set to True.
 additional_diags = True
 # do you want to add additional properties such as propagation distance, mean vertical occupation...? Set to True. This will run only after the detection has completed
