@@ -68,7 +68,7 @@ A comprehensive list of input needed to run the package can be found here:
 | define_TRACEX_variables.py | Python script where variables, settings and paths are defined |
 | launch_TRACEX.py | Python script to execute the code |
 | TRACEX_functions.py | Python script gathering all functions needed |
-| inputs.pdf/outputs.pdf  | Tables of all needed inputs and all available outputs |
+| TRACEX_inputs_outputs_description.pdf  | Tables of all needed inputs and all available outputs |
 | TRACEX_unit_test/launch_TRACEX_unit_test.py|  Script used on a simple boolean 2D array divided in time into two chunks to give an example of the detection of extremes and the merging across chunks |
 | TRACEX_unit_test/2D_example_TRACEX.ipynb | IPython notebook detailing the steps within the TRACE-X code that lead to the detection and tracking of five extremes from a simple 2D array divided in time into two chunks. |
 
