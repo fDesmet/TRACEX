@@ -60,3 +60,29 @@ A comprehensive list of input needed to run the package can be found here:
     - if thresh *(or thresh2)* is a string (= not absolute threshold): the threshold field 'thresh_main' *+ if compound 'thresh_main2' + if moving baseline 'slope_main' field (+'slope_main2')*
     - the threshold to be used for additional diagnostics such as intensity of oxygen or temperature; if 0, then the mean value will be returned instead of intensity. 
 7. The 365 and 366 days climatologies (or other frequency depending on model output frequency) for temperature to compute delta_temp in extremes 
+
+## Documentation and usage
+
+| Files | Description |
+| :------------- | -----------: |
+| TRACEX_unit_test/launch_TRACEX_unit_test.py|  Script used on a simple boolean 2D array divided in time into two chunks to highlight the the detection of extremes and the merging across chunks |
+| TRACEX_unit_test/2D_example_TRACEX.ipynb | IPython notebook detailing the steps of the code TRACE-X to detect five extremes from a simple 2D array divided in time into two chunks. |
+| define_TRACEX_variables.py | Script where to define the variables, settings, paths |
+| TRACEX_functions.py |Script with all needed functions |
+| launch_TRACEX.py | Script to execute the code  |
+| inputs.pdf/outputs.pdf  | Tables of all needed inputs and all available outputs |
+
+## References
+Desmet, F. et al. (2021), Ocean pH-Aragonite extremes in the California Current System and Northeast Pacific (submitted)
+
+## Acknowledgements
+The code was written by Flora Desmet with important contributions from Eike Köhn. 
+The architecture of the code was inspired from the marineHeatWaves package from Hobday, A.J. et al. (2016). 
+
+## Contact 
+Flora Desmet
+Environmental Physics Group 
+ETH Zürich
+Zürich, Switzerland
+Email flora.desmet@usys.ethz.ch
+Website https://fdesmet.github.io/

@@ -64,7 +64,7 @@ def init_property_extreme_dict(additional_diags):
 
     For temperature: 
 
-    delta_temp_max                  [degC] the maximum temperature anomaly (positive or negative) 
+    delta_temp_max                  [degC] maximum temperature anomaly (positive or negative) 
     intensityxvolume_delta_temp     [km3.d.degC] volume weighted space and time sum of temperature anomalies in the event 
     delta_temp_mean                 [degC] time and volume weighted mean temperature anomaly in the event (intensityxvolume_delta_temp/cumulative volume in time)
 
@@ -735,8 +735,8 @@ def implement_additonal_characteristics(mhw,fdcoast,dcoast_varname,flonlat,lon_v
     - dcoast                    [km] time average of volume weighted distance to the coast
     - lat                       [degN] time average of volume weighted latitude
     - lon                       [degE] time average of volume weighted longitute
-    - horProp                   [km] distance between the center of gravity of an extreme at iniation and at ending
-    - vertProp                  [m] height difference between the center of gravity of an extreme at iniation and at ending: positive value means a deepening; negative value means a shoaling of the events over its lifetime
+    - horProp                   [km] distance between the center of gravity of an extreme at initiation and at ending
+    - vertProp                  [m] height difference between the center of gravity of an extreme at initiation and at ending: positive value means a deepening; negative value means a shoaling of the events over its lifetime
     - propVel                   [km/d] horizontal propagation divided by duration of an event
     - area_mean                 [km2] area average in time and depth
     - duration_at_cell_mean     [days] average duration at each grid cell involved in the extreme
@@ -922,20 +922,23 @@ def select_events_reaching_top_depth_limit(mhw,zlevs_rho,extremes,depth_lim=100)
             ev_to_remove.append(ev)
             idx_to_remove.append(idx)     
 
-    print('{} events did not reach the {} m depth'.format(len(ev_to_remove),depth_lim))
-    # Remove all extremes not reaching the depth limit from coordinates dictionnay 
-    for k in ev_to_remove:
-        del extremes[str(k)]
-    
-    # Remove all extremes not reaching the depth limit from characteristics dictionnay   
-    # convert the array into list 
-    mhw['duration'] = mhw['duration'].tolist()               
-    for k in mhw.keys():
-        if k == 'n_events':
-            continue
-        for track,n in zip(idx_to_remove,range(len(idx_to_remove))):
-            mhw[k].pop(int(track-n))          
-    # Replace the number of events by the length of the dictionnary to have the number of events fulfilling conditions
-    mhw['n_events'] = len(mhw['ev_number'])  
+    if len(ev_to_remove)>0:
+        print('{} events did not reach the {} m depth'.format(len(ev_to_remove),depth_lim))
+        # Remove all extremes not reaching the depth limit from coordinates dictionnay 
+        for k in ev_to_remove:
+            del extremes[str(k)]
+        
+        # Remove all extremes not reaching the depth limit from characteristics dictionnay   
+        # convert the array into list 
+        mhw['duration'] = mhw['duration'].tolist()               
+        for k in mhw.keys():
+            if k == 'n_events':
+                continue
+            for track,n in zip(idx_to_remove,range(len(idx_to_remove))):
+                mhw[k].pop(int(track-n))          
+        # Replace the number of events by the length of the dictionnary to have the number of events fulfilling conditions
+        mhw['n_events'] = len(mhw['ev_number'])  
+    else:
+        print('All events reach the {} m depth. Nothing to remove.'.format(depth_lim))
 
     return mhw,extremes
