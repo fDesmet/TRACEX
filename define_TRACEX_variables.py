@@ -93,7 +93,7 @@ depth = 150             # in meters for the detection part
 depth_lim_output = 100  # in meters for the final outputs
 # what is your lower duration limit? Duration>= minDuration
 minDuration = 5   # in days
-# are you restarting the detection from a year in the middle of your period? Set to True. 
+# are you restarting the detection from a year in the middle of your period? Do you want to extend your detection to following years? Set to True. 
 restart = False
 # do you want additional diagnostics to be output such as oxgen and temperature informations? Set to True.
 additional_diags = True

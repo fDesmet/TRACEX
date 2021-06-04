@@ -36,7 +36,7 @@ As model output (ROMS in this case) can be memory heavy, this package allows to 
 The package:
 1. is compatible with different domain set-up of ROMS and should also be easily transferable to other model output<br>
 **Note**: ROMS run on terrain following s-coordinates for which the highest s-level represents the surface and the s=0 level represents the deepest point at a given location. 
-2. can process different time periods, output frequency with different chunk lengthstimesteps
+2. can process different time periods, output frequency with different chunk lengths
 3. can ignore extremes in certain parts of the model output (i.e. below a certain depth or outside a certain domain, given as a mask)
 4. can require the extremes to have a minimum duration 
 5. can detect compound extremes, ie patches simultaneously extreme with regard to two different variables. 
@@ -65,24 +65,24 @@ A comprehensive list of input needed to run the package can be found here:
 
 | Files | Description |
 | :------------- | -----------: |
-| TRACEX_unit_test/launch_TRACEX_unit_test.py|  Script used on a simple boolean 2D array divided in time into two chunks to highlight the the detection of extremes and the merging across chunks |
-| TRACEX_unit_test/2D_example_TRACEX.ipynb | IPython notebook detailing the steps of the code TRACE-X to detect five extremes from a simple 2D array divided in time into two chunks. |
-| define_TRACEX_variables.py | Script where to define the variables, settings, paths |
-| TRACEX_functions.py |Script with all needed functions |
-| launch_TRACEX.py | Script to execute the code  |
+| define_TRACEX_variables.py | Python script where variables, settings and paths are defined |
+| launch_TRACEX.py | Python script to execute the code |
+| TRACEX_functions.py | Python script gathering all functions needed |
 | inputs.pdf/outputs.pdf  | Tables of all needed inputs and all available outputs |
+| TRACEX_unit_test/launch_TRACEX_unit_test.py|  Script used on a simple boolean 2D array divided in time into two chunks to give an example of the detection of extremes and the merging across chunks |
+| TRACEX_unit_test/2D_example_TRACEX.ipynb | IPython notebook detailing the steps within the TRACE-X code that lead to the detection and tracking of five extremes from a simple 2D array divided in time into two chunks. |
 
 ## References
-Desmet, F. et al. (2021), Ocean pH-Aragonite extremes in the California Current System and Northeast Pacific (submitted)
+Desmet, F. et al. (2021), Ocean pH-Aragonite extremes in the California Current System and Northeast Pacific (in prep)
 
 ## Acknowledgements
 The code was written by Flora Desmet with important contributions from Eike Köhn. 
-The architecture of the code was inspired from the marineHeatWaves package from Hobday, A.J. et al. (2016). 
+The architecture of the code was inspired from the marineHeatWaves package used in Hobday, A.J. et al. (2016). 
 
 ## Contact 
-Flora Desmet
-Environmental Physics Group 
-ETH Zürich
-Zürich, Switzerland
-Email flora.desmet@usys.ethz.ch
-Website https://fdesmet.github.io/
+Flora Desmet <br>
+Environmental Physics Group  <br>
+ETH Zürich <br>
+Zürich, Switzerland <br>
+Email flora.desmet@usys.ethz.ch <br>
+Website https://fdesmet.github.io/ <br>
