@@ -3,8 +3,11 @@
 Detecting marine extremes in space (3D) and time.<br>
 Extremes with regards to pH, aragonite saturation state, oxygen, temperature or any other variable are detected in space (3D) and time from large model output. <br>
 
-<img width="70%" src="/images/TRACEX.png"/>
-Modified from Desmet et al. 2021 *(in review)*
+<p align="center">
+  <img width="70%" src="/images/TRACEX.png" alt="Boolean array 2D example"/>
+</p>
+
+Modified from Desmet et al. 2021, *in review*.
 
 ## Content of the package
 This package contains:
