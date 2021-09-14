@@ -455,7 +455,9 @@ def merge_mhws(mhw,idx_tmp_ev,idx_ev,additional_diags):
         
     # Both volumes are added
     mhw['volume_tot'][idx_ev[0][0]] += mhw['volume_tot'][idx_tmp_ev[0][0]]
-    
+    # Update mean volume
+    mhw['volume_mean'][idx_ev[0][0]] = mhw['volume_tot'][idx_ev[0][0]]/mhw['duration'][idx_ev[0][0]]
+
     # Maximum intensity between the two
     if mhw['intensity_max'][idx_tmp_ev[0][0]]>mhw['intensity_max'][idx_ev[0][0]]:     
         #change intensity max
@@ -467,12 +469,16 @@ def merge_mhws(mhw,idx_tmp_ev,idx_ev,additional_diags):
    
     # Both severities are added (cumulative intensities)
     mhw['intensityxvolume_detect_var'][idx_ev[0][0]] += mhw['intensityxvolume_detect_var'][idx_tmp_ev[0][0]]
+    # Update mean intensity
+    mhw['intensity_mean'][idx_ev[0][0]] = mhw['intensityxvolume_detect_var'][idx_ev[0][0]]/mhw['volume_tot'][idx_ev[0][0]]
         
     # Minimum variable value between the two
     if mhw['detect_var_min'][idx_tmp_ev[0][0]]<mhw['detect_var_min'][idx_ev[0][0]]: 
         mhw['detect_var_min'][idx_ev[0][0]] = mhw['detect_var_min'][idx_tmp_ev[0][0]]
     # Both cumulative variable fields are added
     mhw['detect_varxvolume_detect_var'][idx_ev[0][0]] += mhw['detect_varxvolume_detect_var'][idx_tmp_ev[0][0]]
+    # Update mean value
+    mhw['detect_var_mean'][idx_ev[0][0]] = mhw['detect_varxvolume_detect_var'][idx_ev[0][0]]/mhw['volume_tot'][idx_ev[0][0]]
           
     # Spatial and vertical extent
     if mhw['z_min'][idx_tmp_ev[0][0]]>mhw['z_min'][idx_ev[0][0]]:
@@ -491,7 +497,9 @@ def merge_mhws(mhw,idx_tmp_ev,idx_ev,additional_diags):
         if mhw['omega_min'][idx_tmp_ev[0][0]]<mhw['omega_min'][idx_ev[0][0]]: 
             mhw['omega_min'][idx_ev[0][0]] = mhw['omega_min'][idx_tmp_ev[0][0]]
         mhw['omegaxvolume_omega'][idx_ev[0][0]] += mhw['omegaxvolume_omega'][idx_tmp_ev[0][0]]
+        mhw['omega_mean'][idx_ev[0][0]] = mhw['omegaxvolume_omega'][idx_ev[0][0]]/mhw['volume_tot'][idx_ev[0][0]]
         mhw['intensityxvolume_omega'][idx_ev[0][0]] += mhw['intensityxvolume_omega'][idx_tmp_ev[0][0]]
+        mhw['omega_I_mean'][idx_ev[0][0]] = mhw['intensityxvolume_omega'][idx_ev[0][0]]/mhw['volume_tot'][idx_ev[0][0]]
         if mhw['omega_I_max'][idx_tmp_ev[0][0]]>mhw['omega_I_max'][idx_ev[0][0]]:     
             # Update maximum intensity
             mhw['omega_I_max'][idx_ev[0][0]] =  mhw['omega_I_max'][idx_tmp_ev[0][0]]    
@@ -499,7 +507,9 @@ def merge_mhws(mhw,idx_tmp_ev,idx_ev,additional_diags):
         if mhw['pH_min'][idx_tmp_ev[0][0]]<mhw['pH_min'][idx_ev[0][0]]: 
             mhw['pH_min'][idx_ev[0][0]] = mhw['pH_min'][idx_tmp_ev[0][0]]
         mhw['pHxvolume_pH'][idx_ev[0][0]] += mhw['pHxvolume_pH'][idx_tmp_ev[0][0]]
+        mhw['pH_mean'][idx_ev[0][0]] = mhw['pHxvolume_pH'][idx_ev[0][0]]/mhw['volume_tot'][idx_ev[0][0]]
         mhw['intensityxvolume_pH'][idx_ev[0][0]] += mhw['intensityxvolume_pH'][idx_tmp_ev[0][0]]
+        mhw['pH_I_mean'][idx_ev[0][0]] = mhw['intensityxvolume_pH'][idx_ev[0][0]]/mhw['volume_tot'][idx_ev[0][0]]
         if mhw['pH_I_max'][idx_tmp_ev[0][0]]>mhw['pH_I_max'][idx_ev[0][0]]:     
             # Update maximum intensity
             mhw['pH_I_max'][idx_ev[0][0]] =  mhw['pH_I_max'][idx_tmp_ev[0][0]]   
@@ -507,11 +517,14 @@ def merge_mhws(mhw,idx_tmp_ev,idx_ev,additional_diags):
         if mhw['oxygen_min'][idx_tmp_ev[0][0]]<mhw['oxygen_min'][idx_ev[0][0]]:
             mhw['oxygen_min'][idx_ev[0][0]] = mhw['oxygen_min'][idx_tmp_ev[0][0]]
         mhw['intensityxvolume_oxygen'][idx_ev[0][0]] += mhw['intensityxvolume_oxygen'][idx_tmp_ev[0][0]]
+        mhw['oxygen_I_mean'][idx_ev[0][0]] = mhw['intensityxvolume_oxygen'][idx_ev[0][0]]/mhw['volume_tot'][idx_ev[0][0]]
         mhw['oxygenxvolume_oxygen'][idx_ev[0][0]] += mhw['oxygenxvolume_oxygen'][idx_tmp_ev[0][0]]
-    
+        mhw['oxygen_mean'][idx_ev[0][0]] = mhw['oxygenxvolume_oxygen'][idx_ev[0][0]]/mhw['volume_tot'][idx_ev[0][0]]
+
         if abs(mhw['delta_temp_max'][idx_tmp_ev[0][0]])>abs(mhw['delta_temp_max'][idx_ev[0][0]]):
             mhw['delta_temp_max'][idx_ev[0][0]] = mhw['delta_temp_max'][idx_tmp_ev[0][0]]
         mhw['intensityxvolume_delta_temp'][idx_ev[0][0]] += mhw['intensityxvolume_delta_temp'][idx_tmp_ev[0][0]] 
+        mhw['delta_temp_mean'][idx_ev[0][0]] =  mhw['intensityxvolume_delta_temp'][idx_ev[0][0]]/mhw['volume_tot'][idx_ev[0][0]]
         
    # remove the event that has been merged from dictionnary
     for k in mhw.keys():
