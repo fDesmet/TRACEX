@@ -59,7 +59,7 @@ from TRACEX_functions import *
 ###################################################################################################
 var = 'omega' # the detection variable
 var2 = 'pH'   # the second detection variable if compound event
-thresh = 'stat_1th_omega' # the variable threshold: used to pick the right variable for detection
+thresh = 'stat_1th_omega' # the variable threshold: used to pick the right variable for detection. If thresh = float then absolute threhsold. 
 thresh2 = 'stat_1th_pH'   # the second variable threshold: used to pick the right variable for detection if compound 
 
 # if statistical threhsold give the percentile used: used to load the proper file
@@ -241,6 +241,9 @@ else:
         if two_threshs:
             print('Also loading the 3D array of the {}th percentile of omega values...'.format(perc_choice))
             thresh_main2 = load_npy_file_3D(path_in,'OA_thresh/omega_thresh_{}thperc_{}.npy'.format(perc_choice,suffixe_thresh_file),indices)
+    elif isinstance(thresh, float):
+        # only detection on one variable is implemented for absolute threshold
+        print('Using an absolute threshold of {}'.format(thresh))
     else:
         raise NotImplemented("Sorry, this threshold {} is not implemented".format(thresh)) 
         
