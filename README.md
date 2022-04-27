@@ -7,7 +7,7 @@ Extremes with regards to pH, aragonite saturation state, oxygen, temperature or 
   <img width="70%" src="/images/TRACEX.png" alt="Boolean array 2D example"/>
 </p>
 
-Modified from Desmet, F., Gruber, N., Köhn, E. E., Münnich, M., & Vogt, M. (2022). Tracking the space-time evolution of ocean acidification extremes in the California current system and northeast Pacific. *Journal of Geophysical Research: Oceans, 127*, e2021JC018159. https://doi. org/10.1029/2021JC018159
+Modified from Desmet, F., Gruber, N., Köhn, E. E., Münnich, M., & Vogt, M. (2022). Tracking the space-time evolution of ocean acidification extremes in the California current system and northeast Pacific. *Journal of Geophysical Research: Oceans, 127*, e2021JC018159. https://doi.org/10.1029/2021JC018159
 
 ## Content of the package
 This package contains:
@@ -77,7 +77,7 @@ A comprehensive list of input needed to run the package can be found here:
 | TRACEX_unit_test/2D_example_TRACEX.ipynb | IPython notebook detailing the steps within the TRACE-X code that lead to the detection and tracking of five extremes from a simple 2D array divided in time into two chunks. |
 
 ## References
-Desmet, F., Gruber, N., Köhn, E. E., Münnich, M., & Vogt, M. (2022). Tracking the space-time evolution of ocean acidification extremes in the California current system and northeast Pacific. *Journal of Geophysical Research: Oceans, 127*, e2021JC018159. https://doi. org/10.1029/2021JC018159
+Desmet, F., Gruber, N., Köhn, E. E., Münnich, M., & Vogt, M. (2022). Tracking the space-time evolution of ocean acidification extremes in the California current system and northeast Pacific. *Journal of Geophysical Research: Oceans, 127*, e2021JC018159. https://doi.org/10.1029/2021JC018159
 
 ## Acknowledgements
 The code was written by Flora Desmet with important contributions from Eike E. Köhn. 
